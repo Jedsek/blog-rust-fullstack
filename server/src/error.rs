@@ -1,9 +1,9 @@
 use actix_web::http::header::ContentType;
 use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
-use derive_more::Display;
+use derive_more::{Display, Error};
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Display)]
+#[derive(Debug, Clone, Display, Error)]
 pub enum CustomError {
     #[display(fmt = "not found")]
     NotFound,
@@ -13,6 +13,9 @@ pub enum CustomError {
 
     #[display(fmt = "bad request")]
     BadClientData,
+
+    #[display(fmt = "server database error")]
+    DatabaseError,
 
     #[display(fmt = "internal server error")]
     InternalError,
@@ -24,7 +27,7 @@ impl ResponseError for CustomError {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::Timeout => StatusCode::GATEWAY_TIMEOUT,
             Self::BadClientData => StatusCode::BAD_REQUEST,
-            Self::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::InternalError | Self::DatabaseError => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
