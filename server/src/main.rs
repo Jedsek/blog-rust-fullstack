@@ -1,9 +1,26 @@
+#![allow(unused)]
+
 mod db;
 mod error;
 
-use actix_web::{get, middleware, App, HttpServer};
+use actix_web::{get, middleware, web, App, HttpServer};
+use db::Pool;
 use error::CustomError;
-use std::env;
+use std::{
+    env,
+    sync::{Arc, Mutex},
+};
+
+#[derive(Debug, Clone)]
+pub struct AppState {
+    pub pool: Pool,
+}
+
+// impl AppState {
+//     fn wrap(self) -> Arc<Mutex<Self>> {
+//         Arc::new(Mutex::new(self))
+//     }
+// }
 
 #[actix_web::main]
 async fn main() -> Result<(), CustomError> {
@@ -14,10 +31,14 @@ async fn main() -> Result<(), CustomError> {
     pretty_env_logger::init();
 
     let db_url = env::var("DATABASE_URL").expect("Please set DATABASE_URL");
-    let _pool = db::create_pool(&db_url).await.unwrap();
 
-    HttpServer::new(|| {
+    let app_state = web::Data::new(AppState {
+        pool: db::create_pool(&db_url).await?,
+    });
+
+    HttpServer::new(move || {
         App::new()
+            .app_data(app_state.clone())
             .wrap(middleware::Logger::default())
             .service(index)
             .service(error_1)

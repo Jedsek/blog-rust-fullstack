@@ -2,7 +2,7 @@
 
 use crate::error::CustomError;
 
-type Pool = sqlx::Pool<sqlx::Sqlite>;
+pub type Pool = sqlx::Pool<sqlx::Sqlite>;
 
 pub async fn create_pool(db_url: &str) -> Result<Pool, CustomError> {
     sqlx::sqlite::SqlitePoolOptions::new()
