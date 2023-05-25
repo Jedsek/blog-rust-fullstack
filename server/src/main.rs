@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+mod api;
 mod db;
 mod error;
 
@@ -11,9 +12,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct AppState {
-    pub pool: Pool,
+    pub pool: Mutex<Pool>,
 }
 
 // impl AppState {
@@ -33,7 +34,7 @@ async fn main() -> Result<(), CustomError> {
     let db_url = env::var("DATABASE_URL").expect("Please set DATABASE_URL");
 
     let app_state = web::Data::new(AppState {
-        pool: db::create_pool(&db_url).await?,
+        pool: Mutex::new(db::create_pool(&db_url).await?),
     });
 
     HttpServer::new(move || {
