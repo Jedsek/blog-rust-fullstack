@@ -24,7 +24,7 @@ trunk serve
 cargo run
 ```
 
-if you want hot-reload for backend server, you could install `cargo-watch`:  
+if you want hot-reload for backend server when file was changed, you could install `cargo-watch`:  
 
 ```bash
 cargo install cargo-watch
