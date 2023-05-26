@@ -1,21 +1,17 @@
 #![allow(unused)]
 
-use sqlx::{migrate::MigrateDatabase, Executor, Sqlite};
-
 use crate::error::CustomError;
+use sqlx::{migrate::MigrateDatabase, Executor, Sqlite};
 
 pub type Pool = sqlx::Pool<Sqlite>;
 
 pub async fn create_pool(db_url: &str) -> Result<Pool, CustomError> {
-    Sqlite::create_database(db_url)
-        .await
-        .map_err(CustomError::DatabaseError);
+    Sqlite::create_database(db_url).await?;
 
     let pool = sqlx::sqlite::SqlitePoolOptions::new()
         .max_connections(10)
         .connect(db_url)
-        .await
-        .map_err(CustomError::DatabaseError)?;
+        .await?;
 
     init_db(&pool).await?;
 
@@ -23,9 +19,6 @@ pub async fn create_pool(db_url: &str) -> Result<Pool, CustomError> {
 }
 
 pub async fn init_db(pool: &Pool) -> Result<(), CustomError> {
-    pool.execute(include_str!("init.sql"))
-        .await
-        .map_err(CustomError::DatabaseError)?;
-
+    pool.execute(include_str!("init.sql")).await?;
     Ok(())
 }

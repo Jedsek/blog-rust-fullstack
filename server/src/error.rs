@@ -1,24 +1,25 @@
+use std::fmt::Display;
+use std::io;
+
 use actix_web::http::header::ContentType;
 use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
 use derive_more::{Display, Error};
+use serde::de::value;
 
 #[allow(dead_code)]
-#[derive(Debug, Display, Error)]
+#[derive(thiserror::Error, Debug)]
 pub enum CustomError {
-    #[display(fmt = "not found")]
+    #[error("not found")]
     NotFound,
 
-    #[display(fmt = "time out")]
+    #[error("time out")]
     Timeout,
 
-    #[display(fmt = "bad request")]
-    BadClientData,
+    #[error("bad request")]
+    BadRequest(String),
 
-    #[display(fmt = "server database error")]
-    DatabaseError(sqlx::Error),
-
-    #[display(fmt = "internal server error")]
-    InternalError,
+    #[error("internal server error: {0}")]
+    InternalError(String),
 }
 
 impl ResponseError for CustomError {
@@ -26,8 +27,8 @@ impl ResponseError for CustomError {
         match self {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::Timeout => StatusCode::GATEWAY_TIMEOUT,
-            Self::BadClientData => StatusCode::BAD_REQUEST,
-            Self::InternalError | Self::DatabaseError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::BadRequest(_) => StatusCode::BAD_REQUEST,
+            Self::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
@@ -35,5 +36,20 @@ impl ResponseError for CustomError {
         HttpResponse::build(self.status_code())
             .insert_header(ContentType::html())
             .body(self.to_string())
+    }
+}
+
+trait MyError: ToString {}
+
+impl MyError for actix_web::Error {}
+impl MyError for sqlx::Error {}
+impl MyError for io::Error {}
+
+impl<T> From<T> for CustomError
+where
+    T: MyError + ToString,
+{
+    fn from(err: T) -> Self {
+        Self::InternalError(err.to_string())
     }
 }
