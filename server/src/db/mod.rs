@@ -1,7 +1,5 @@
-#![allow(unused)]
-
 use crate::error::CustomError;
-use sqlx::{migrate::MigrateDatabase, Executor, Sqlite};
+use sqlx::{migrate::MigrateDatabase, Sqlite};
 
 pub type Pool = sqlx::Pool<Sqlite>;
 
@@ -19,6 +17,6 @@ pub async fn create_pool(db_url: &str) -> Result<Pool, CustomError> {
 }
 
 pub async fn init_db(pool: &Pool) -> Result<(), CustomError> {
-    pool.execute(include_str!("init.sql")).await?;
+    sqlx::query_file!("src/db/init.sql").execute(pool).await?;
     Ok(())
 }

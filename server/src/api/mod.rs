@@ -1,10 +1,6 @@
-mod article;
-
-use crate::error::CustomError;
 use actix_web::get;
-use futures::io;
 
-pub use article::*;
+pub mod article;
 
 #[get("/")]
 pub async fn home() -> &'static str {

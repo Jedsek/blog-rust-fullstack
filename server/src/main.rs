@@ -1,14 +1,10 @@
-#![allow(unused)]
-
 mod api;
 mod db;
 mod error;
+mod route;
 
-use actix_web::{
-    get, middleware,
-    web::{self, Data},
-    App, HttpServer,
-};
+use actix_web::{get, middleware, web::Data, App, HttpServer};
+use api::article;
 use db::Pool;
 use error::CustomError;
 use std::env;
@@ -29,18 +25,18 @@ async fn main() -> Result<(), CustomError> {
 
     let db_url = env::var("DATABASE_URL").expect("Please set DATABASE_URL");
 
-    let state = web::Data::new(AppState {
+    let state = Data::new(AppState {
         pool: Mutex::new(db::create_pool(&db_url).await?),
     });
 
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
+            .configure(route::route)
             .wrap(middleware::Logger::default())
             .service(api::home)
-            .service(api::get_articles)
-            .service(api::new_article)
-            .service(api::edit_article)
+            .service(article::new)
+            .service(article::edit)
     })
     .bind("127.0.0.1:9090")?
     .run()

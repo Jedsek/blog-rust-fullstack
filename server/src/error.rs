@@ -1,16 +1,15 @@
-use std::fmt::Display;
+use actix_web::{
+    error::ResponseError,
+    http::{header::ContentType, StatusCode},
+    HttpResponse,
+};
 use std::io;
-
-use actix_web::http::header::ContentType;
-use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
-use derive_more::{Display, Error};
-use serde::de::value;
 
 #[allow(dead_code)]
 #[derive(thiserror::Error, Debug)]
 pub enum CustomError {
     #[error("not found")]
-    NotFound,
+    NotFound(String),
 
     #[error("time out")]
     Timeout,
@@ -25,7 +24,7 @@ pub enum CustomError {
 impl ResponseError for CustomError {
     fn status_code(&self) -> StatusCode {
         match self {
-            Self::NotFound => StatusCode::NOT_FOUND,
+            Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::Timeout => StatusCode::GATEWAY_TIMEOUT,
             Self::BadRequest(_) => StatusCode::BAD_REQUEST,
             Self::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
