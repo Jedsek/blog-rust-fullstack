@@ -1,14 +1,15 @@
+use crate::model::article::ArticlePreview;
 use crate::{error::CustomError, AppState};
 use actix_web::{
     delete, get, post, put,
     web::{self, Data, Json},
     HttpResponse, Responder,
 };
-use shared::{articles::ArticlePreview, Article};
+use shared::Article;
 
 #[get("")]
 pub async fn get_all(state: Data<AppState>) -> Result<Json<Vec<Article>>, CustomError> {
-    let pool = &*state.pool.lock().await;
+    let pool = &state.pool;
 
     let articles: Vec<Article> = sqlx::query_as("select * from articles")
         .fetch_all(pool)
@@ -18,30 +19,30 @@ pub async fn get_all(state: Data<AppState>) -> Result<Json<Vec<Article>>, Custom
 }
 
 #[get("/{id}")]
-pub async fn get_one(
+pub async fn get_by_id(
     id: web::Path<(u32,)>,
     state: Data<AppState>,
-) -> Result<Json<Vec<Article>>, CustomError> {
-    let pool = &*state.pool.lock().await;
+) -> Result<Json<Article>, CustomError> {
+    let pool = &state.pool;
 
-    let articles: Vec<Article> = sqlx::query_as("select * from articles where id = $1")
+    let article: Article = sqlx::query_as("select * from articles where id = $1")
         .bind(id.0)
-        .fetch_all(pool)
+        .fetch_one(pool)
         .await?;
 
-    Ok(Json(articles))
+    Ok(Json(article))
 }
 
 #[post("/new")]
 pub async fn new(
     state: Data<AppState>,
-    article: Json<Article>,
+    Json(article): Json<Article>,
 ) -> Result<impl Responder, CustomError> {
-    let pool = &*state.pool.lock().await;
+    let pool = &state.pool;
 
     sqlx::query("insert into articles (title, content) values (?, ?)")
-        .bind(&article.title)
-        .bind(&article.content)
+        .bind(article.title)
+        .bind(article.content)
         .execute(pool)
         .await?;
 
@@ -49,16 +50,19 @@ pub async fn new(
 }
 
 #[put("/edit")]
-pub async fn edit(state: Data<AppState>, article: Json<Article>) -> Result<String, CustomError> {
-    let pool = &*state.pool.lock().await;
+pub async fn edit(
+    state: Data<AppState>,
+    Json(article): Json<Article>,
+) -> Result<String, CustomError> {
+    let pool = &state.pool;
 
     let id = article
         .id
         .ok_or(CustomError::BadRequest("请提供要修改的文章id".into()))?;
 
     sqlx::query("update articles set title = ?, content = ? where id = ?")
-        .bind(&article.title)
-        .bind(&article.content)
+        .bind(article.title)
+        .bind(article.content)
         .bind(id)
         .execute(pool)
         .await?;
@@ -68,7 +72,7 @@ pub async fn edit(state: Data<AppState>, article: Json<Article>) -> Result<Strin
 
 #[delete("/delete/{id}")]
 pub async fn delete(id: web::Path<(u32,)>, state: Data<AppState>) -> Result<String, CustomError> {
-    let pool = &*state.pool.lock().await;
+    let pool = &state.pool;
 
     sqlx::query("delete from articles where id = ?")
         .bind(id.0)
@@ -83,7 +87,7 @@ pub async fn serch(
     keyword: web::Path<(String,)>,
     state: Data<AppState>,
 ) -> Result<Json<Vec<ArticlePreview>>, CustomError> {
-    let pool = &*state.pool.lock().await;
+    let pool = &state.pool;
 
     let keyword = format!("%{}%", keyword.0);
 

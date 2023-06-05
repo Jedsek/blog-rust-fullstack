@@ -1,1 +1,2 @@
 /target
+/server/src/api/user/client.*

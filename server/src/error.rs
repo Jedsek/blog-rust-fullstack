@@ -17,6 +17,9 @@ pub enum CustomError {
     #[error("bad request")]
     BadRequest(String),
 
+    #[error("authentication failed")]
+    AuthFailed(String),
+
     #[error("internal server error: {0}")]
     InternalError(String),
 }
@@ -27,6 +30,7 @@ impl ResponseError for CustomError {
             Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::Timeout => StatusCode::GATEWAY_TIMEOUT,
             Self::BadRequest(_) => StatusCode::BAD_REQUEST,
+            Self::AuthFailed(_) => StatusCode::UNAUTHORIZED,
             Self::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -38,15 +42,16 @@ impl ResponseError for CustomError {
     }
 }
 
-trait MyError: ToString {}
+trait MyError: std::error::Error {}
 
 impl MyError for actix_web::Error {}
 impl MyError for sqlx::Error {}
 impl MyError for io::Error {}
+impl MyError for reqwest::Error {}
 
 impl<T> From<T> for CustomError
 where
-    T: MyError + ToString,
+    T: MyError,
 {
     fn from(err: T) -> Self {
         Self::InternalError(err.to_string())

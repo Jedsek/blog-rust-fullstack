@@ -201,7 +201,7 @@ function makeMutClosure(arg0, arg1, dtor, f) {
     return real;
 }
 function __wbg_adapter_16(arg0, arg1, arg2) {
-    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h86597e09892ec1a3(arg0, arg1, addHeapObject(arg2));
+    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h775bc8f06a030403(arg0, arg1, addHeapObject(arg2));
 }
 
 let stack_pointer = 128;
@@ -213,7 +213,7 @@ function addBorrowedObject(obj) {
 }
 function __wbg_adapter_19(arg0, arg1, arg2) {
     try {
-        wasm._dyn_core__ops__function__FnMut___A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hd012a32d87a482b5(arg0, arg1, addBorrowedObject(arg2));
+        wasm._dyn_core__ops__function__FnMut___A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h798120904d5d9875(arg0, arg1, addBorrowedObject(arg2));
     } finally {
         heap[stack_pointer++] = undefined;
     }
@@ -586,12 +586,12 @@ function __wbg_get_imports() {
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
         throw new Error(getStringFromWasm0(arg0, arg1));
     };
-    imports.wbg.__wbindgen_closure_wrapper2841 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper2824 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 226, __wbg_adapter_16);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper2971 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 235, __wbg_adapter_19);
+    imports.wbg.__wbindgen_closure_wrapper2965 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 236, __wbg_adapter_19);
         return addHeapObject(ret);
     };
 
@@ -633,7 +633,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('client-d3550c7f6aac6ff7_bg.wasm', import.meta.url);
+        input = new URL('client-ef707d62172bc43_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 

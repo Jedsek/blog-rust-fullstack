@@ -1,3 +1,4 @@
 pub mod articles;
+pub mod users;
 
-pub use articles::Article;
+pub use articles::*;

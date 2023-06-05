@@ -5,11 +5,12 @@ pub fn route(cfg: &mut ServiceConfig) {
     cfg.service(
         web::scope("/article")
             .service(article::get_all)
-            .service(article::get_one)
+            .service(article::get_by_id)
             .service(article::serch)
             .service(article::delete)
             .service(article::edit)
             .service(article::new),
     )
+    .service(web::scope("/user").service(user::github_login))
     .service(home);
 }
