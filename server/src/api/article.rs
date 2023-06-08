@@ -1,4 +1,7 @@
+#![allow(unused)]
+
 use crate::model::article::ArticlePreview;
+use crate::model::auth::{Admin, User};
 use crate::{error::CustomError, AppState};
 use actix_web::{
     delete, get, post, put,
@@ -8,7 +11,7 @@ use actix_web::{
 use shared::Article;
 
 #[get("")]
-pub async fn get_all(state: Data<AppState>) -> Result<Json<Vec<Article>>, CustomError> {
+pub async fn get_all(_: Admin, state: Data<AppState>) -> Result<Json<Vec<Article>>, CustomError> {
     let pool = &state.pool;
 
     let articles: Vec<Article> = sqlx::query_as("select * from articles")

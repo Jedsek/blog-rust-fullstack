@@ -18,19 +18,19 @@ pub struct AccessToekn {
 
 #[derive(Debug, Clone)]
 pub struct User {
-    pub user_id: String,
-    pub access_token: String,
+    pub id: u32,
 }
 
 #[derive(Debug, Clone)]
 pub struct Admin {
-    pub access_token: String,
+    pub id: u32,
 }
 
 impl FromRequest for User {
     type Error = CustomError;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
+    #[rustfmt::skip]
     fn from_request(req: &actix_web::HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
         let req = req.clone();
         Box::pin(async move {
@@ -38,13 +38,9 @@ impl FromRequest for User {
             let cookie_user_id = req.cookie("USER_ID");
 
             match (cookie_user_id.as_ref(), cookie_access_token.as_ref()) {
-                (Some(user_id), Some(access_token)) => {
-                    let user_id = user_id.value().to_string();
-                    let access_token = access_token.value().to_string();
-                    Ok(User {
-                        user_id,
-                        access_token,
-                    })
+                (Some(user_id), Some(_)) => {
+                    let id = parse_id(user_id.value())?;
+                    Ok(Self { id })
                 }
                 _ => Err(CustomError::AuthFailed("你还没有登陆过, 请登陆".into())),
             }
@@ -56,6 +52,7 @@ impl FromRequest for Admin {
     type Error = CustomError;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
+    #[rustfmt::skip]
     fn from_request(req: &actix_web::HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
         let req = req.clone();
         Box::pin(async move {
@@ -63,12 +60,11 @@ impl FromRequest for Admin {
             let cookie_user_id = req.cookie("USER_ID");
 
             match (cookie_user_id.as_ref(), cookie_access_token.as_ref()) {
-                (Some(user_id), Some(access_token)) => {
-                    let user_id = user_id.value().to_string();
-                    let access_token = access_token.value().to_string();
-
+                (Some(user_id), Some(_)) => {
+                    let user_id = user_id.value();
                     if user_id == ADMIN_GITHUB_ID {
-                        Ok(Admin { access_token })
+                        let id = parse_id(user_id)?;
+                        Ok(Self { id })
                     } else {
                         Err(CustomError::AuthFailed("你不是管理员, 权限不足".into()))
                     }
@@ -77,4 +73,9 @@ impl FromRequest for Admin {
             }
         })
     }
+}
+
+#[rustfmt::skip]
+fn parse_id(cookie: &str) -> Result<u32, CustomError> {
+    cookie.parse().map_err(|_| CustomError::InternalError("Cookie/USER_ID 无法被解析为整数".into()))
 }

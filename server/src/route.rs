@@ -11,6 +11,11 @@ pub fn route(cfg: &mut ServiceConfig) {
             .service(article::edit)
             .service(article::new),
     )
+    .service(
+        web::scope("/comment")
+            .service(comment::get_all_for_article)
+            .service(comment::new),
+    )
     .service(web::scope("/user").service(user::github_login))
     .service(home);
 }

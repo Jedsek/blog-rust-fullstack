@@ -13,10 +13,8 @@ create table if not exists users (
 
 create table if not exists comments (
     id integer primary key autoincrement,
-    user_id integer,
-    article_id integer,
-    content varchar(255),
-    date date default (date('now')) not null,
-    foreign key(user_id) references users(id)
-    foreign key(article_id) references articles(id)
+    user_id integer not null,
+    article_id integer not null,
+    content varchar(255) not null,
+    date date default (date('now')) not null
 );

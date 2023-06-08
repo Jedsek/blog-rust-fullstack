@@ -1,6 +1,6 @@
 use crate::{
     error::CustomError,
-    model::user::{AccessToekn, Login},
+    model::auth::{AccessToekn, Login},
     AppState, USER_AGENT,
 };
 use actix_web::{
