@@ -1,4 +1,4 @@
-use crate::component::NavBar;
+use crate::{component::NavBar, route::Route};
 use yew::prelude::*;
 
 #[derive(Debug, PartialEq, Properties)]
@@ -8,15 +8,25 @@ pub struct Props {
 
 #[function_component]
 pub fn Container(props: &Props) -> Html {
-    let set_title = Callback::from(|title: String| gloo::utils::document().set_title(&title));
-
     html! {
         <>
-            <NavBar/>
+            // <NavBar/>
 
-            <ContextProvider<Callback<String>> context={set_title}>
-                { for  props.children.iter() }
-            </ContextProvider<Callback<String>>>
+            <NavBar
+                title="Blog"
+                routes={vec![
+                    Route::Home,
+                    Route::ArticlePreview,
+                    Route::NotFound
+                ]}
+            />
+
+            <progress class="progress"></progress>
+
+
+            { for props.children.iter() }
+
+
         </>
     }
 }

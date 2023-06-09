@@ -10,4 +10,8 @@ pub enum Route {
     #[at("/404")]
     #[display(fmt = "404")]
     NotFound,
+
+    #[at("/article")]
+    #[display(fmt = "Articles")]
+    ArticlePreview,
 }

@@ -1,17 +1,18 @@
 #![allow(unused)]
 
-use crate::model::article::ArticlePreview;
 use crate::model::auth::{Admin, User};
 use crate::{error::CustomError, AppState};
+use actix_web::web::Path;
 use actix_web::{
     delete, get, post, put,
     web::{self, Data, Json},
     HttpResponse, Responder,
 };
+use shared::articles::ArticlePreview;
 use shared::Article;
 
 #[get("")]
-pub async fn get_all(_: Admin, state: Data<AppState>) -> Result<Json<Vec<Article>>, CustomError> {
+pub async fn get_all(state: Data<AppState>) -> Result<Json<Vec<Article>>, CustomError> {
     let pool = &state.pool;
 
     let articles: Vec<Article> = sqlx::query_as("select * from articles")
@@ -23,7 +24,7 @@ pub async fn get_all(_: Admin, state: Data<AppState>) -> Result<Json<Vec<Article
 
 #[get("/{id}")]
 pub async fn get_by_id(
-    id: web::Path<(u32,)>,
+    id: Path<(u32,)>,
     state: Data<AppState>,
 ) -> Result<Json<Article>, CustomError> {
     let pool = &state.pool;
@@ -74,7 +75,7 @@ pub async fn edit(
 }
 
 #[delete("/delete/{id}")]
-pub async fn delete(id: web::Path<(u32,)>, state: Data<AppState>) -> Result<String, CustomError> {
+pub async fn delete(id: Path<(u32,)>, state: Data<AppState>) -> Result<String, CustomError> {
     let pool = &state.pool;
 
     sqlx::query("delete from articles where id = ?")
@@ -87,7 +88,7 @@ pub async fn delete(id: web::Path<(u32,)>, state: Data<AppState>) -> Result<Stri
 
 #[get("/search/{keyword}")]
 pub async fn serch(
-    keyword: web::Path<(String,)>,
+    keyword: Path<(String,)>,
     state: Data<AppState>,
 ) -> Result<Json<Vec<ArticlePreview>>, CustomError> {
     let pool = &state.pool;

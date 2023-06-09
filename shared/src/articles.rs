@@ -9,3 +9,10 @@ pub struct Article {
     pub content: String,
     pub date: Option<NaiveDate>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct ArticlePreview {
+    pub id: u32,
+    pub title: String,
+    pub date: NaiveDate,
+}

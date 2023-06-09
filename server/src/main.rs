@@ -35,6 +35,12 @@ async fn main() -> Result<(), CustomError> {
             .app_data(state.clone())
             .configure(route::route)
             .wrap(middleware::Logger::default())
+            .wrap(
+                actix_cors::Cors::default()
+                    .allowed_origin("http://127.0.0.1:8080")
+                    .allow_any_method()
+                    .allow_any_header(),
+            )
     })
     .bind(URL)?
     .run()
