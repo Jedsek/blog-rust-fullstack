@@ -6,7 +6,7 @@ pub fn NotFound() -> Html {
     set_title("404");
 
     html! {
-        <Card title={"404"} button=false>
+        <Card title={"404"}>
             <p>{ "尝试换个地址?" }</p>
         </Card>
     }

@@ -14,4 +14,8 @@ pub enum Route {
     #[at("/article")]
     #[display(fmt = "Articles")]
     ArticlePreview,
+
+    #[display(fmt = "article-{id}")]
+    #[at("/article/:id")]
+    Article { id: u32 },
 }

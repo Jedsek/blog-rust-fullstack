@@ -1,5 +1,5 @@
 use crate::{
-    component::{ArticlePreview, Container, Home, NotFound},
+    component::{ArticlePreview, ArticleViewer, Container, Home, NotFound},
     route::Route,
 };
 use yew::prelude::*;
@@ -21,7 +21,8 @@ fn switch(route: Route) -> Html {
             match route {
                 Route::Home => html!{<Home />},
                 Route::NotFound => html!{<NotFound/>},
-                Route::ArticlePreview => html!{<ArticlePreview/>}
+                Route::ArticlePreview => html!{<ArticlePreview/>},
+                Route::Article { id } => html!{<ArticleViewer id={id}/>}
             }
         }
         </Container>

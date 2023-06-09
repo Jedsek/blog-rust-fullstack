@@ -8,7 +8,7 @@ pub fn Home() -> Html {
 
     html! {
         <>
-            <Card title={"首页"} button=false>
+            <Card title={"首页"}>
                 <p>{ "这是首页" }</p>
             </Card>
 

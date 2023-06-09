@@ -3,8 +3,6 @@ use yew::prelude::*;
 #[derive(Debug, PartialEq, Properties)]
 pub struct Props {
     pub title: AttrValue,
-    #[prop_or(true)]
-    pub button: bool,
     pub children: Children,
 }
 
@@ -25,11 +23,6 @@ pub fn Card(props: &Props) -> Html {
           <div class="card-body">
             <h2 class="card-title">{&props.title}</h2>
                 {for props.children.iter()}
-            <div class="card-actions justify-end">
-                if props.button {
-                    <button class="btn">{"Goto"}</button>
-                }
-            </div>
           </div>
         </div>
     }

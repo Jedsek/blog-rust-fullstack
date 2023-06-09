@@ -1,10 +1,16 @@
-use crate::{component::Card, fetch, utils::set_title};
+use crate::{
+    component::{Button, Card, Loading},
+    fetch,
+    route::Route,
+    utils::set_title,
+};
 use reqwest::Method;
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use yew_router::prelude::use_navigator;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 struct DataFetched {
     id: u32,
     title: String,
@@ -37,17 +43,30 @@ pub fn ArticlePreview() -> Html {
 
     html! {
         if *is_loading {
-            <Card title="Loading...">
-                { "正在加载中..." }
-            </Card>
+            <Loading />
         } else {
-            {get_articles( (*articles).clone() )}
+            <ArticleGrid resp={(*articles).to_owned()} />
         }
     }
 }
 
-fn get_articles(resp: Result<Vec<DataFetched>, String>) -> Html {
-    let articles = match resp {
+#[derive(Debug, PartialEq, Properties)]
+struct ArticleGridProps {
+    resp: Result<Vec<DataFetched>, String>,
+}
+
+#[function_component]
+fn ArticleGrid(props: &ArticleGridProps) -> Html {
+    let navigator = use_navigator().unwrap();
+
+    let goto_article = |id: u32| {
+        let navigator = navigator.clone();
+        Callback::from(move |_| {
+            navigator.push(&Route::Article { id });
+        })
+    };
+
+    let articles = match props.resp.to_owned() {
         Err(e) => html! { e },
         Ok(articles) => articles
             .into_iter()
@@ -55,6 +74,7 @@ fn get_articles(resp: Result<Vec<DataFetched>, String>) -> Html {
                 html! {
                     <Card title={i.title} key={i.id}>
                         {i.date}
+                        <Button content="Goto" onclick={goto_article(i.id)} />
                     </Card>
                 }
             })
