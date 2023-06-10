@@ -45,7 +45,7 @@ struct NavMenuProps {
 #[function_component]
 fn NavMenu(props: &NavMenuProps) -> Html {
     let navigator = use_navigator().unwrap();
-    let toggle = use_bool_toggle(false);
+    let toggle = use_toggle("OFF", "OPEN");
     let onclick = {
         let toggle = toggle.clone();
         Callback::from(move |_| {
@@ -56,11 +56,7 @@ fn NavMenu(props: &NavMenuProps) -> Html {
 
     let goto = |route: Route| {
         let navigator = navigator.clone();
-        let toggle = toggle.clone();
-        Callback::from(move |_| {
-            toggle.set(true);
-            navigator.push(&route);
-        })
+        Callback::from(move |_| navigator.push(&route))
     };
 
     let display_route = {
