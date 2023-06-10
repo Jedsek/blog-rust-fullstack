@@ -10,7 +10,9 @@ pub struct Props {
 pub fn Button(props: &Props) -> Html {
     html! {
         <div class="card-actions justify-end">
-            <button class="btn normal-case" onclick={props.onclick.clone()}>{&props.content}</button>
+            <button class="btn normal-case transition ease-in-out hover:translate-y-1 hover:translate-x-1 hover:scale-110" onclick={props.onclick.clone()}>
+                {&props.content}
+            </button>
         </div>
     }
 }

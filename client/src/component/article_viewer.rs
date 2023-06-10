@@ -1,4 +1,7 @@
-use crate::{component::Loading, fetch};
+use crate::utils::to_html;
+use crate::{component::Loading, fetch, utils::set_title};
+use pulldown_cmark::html;
+use pulldown_cmark::{Options, Parser};
 use reqwest::Method;
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
@@ -54,19 +57,28 @@ struct MarkdownProps {
 
 #[function_component]
 fn Markdown(props: &MarkdownProps) -> Html {
-    let articles = match props.resp.to_owned() {
+    let articles = match &props.resp {
         Err(e) => html! { e },
-        Ok(article) => html! {
-            <>
-                <span class="place-content-center flex text-5xl">{article.title} </span>
-                <span class="place-content-center flex text-base">{article.date} </span>
-                <br/>
-                <br/>
-                {article.content}
-            </>
-        },
+        Ok(article) => {
+            set_title(&article.title);
+            html! {
+                {convert_markdown_to_html(article)}
+            }
+        }
     };
     html! {
         {articles}
     }
+}
+
+fn convert_markdown_to_html(article: &DataFetched) -> Html {
+    let content = &article.content;
+
+    let enabled_options = Options::all();
+    let parser = Parser::new_ext(content, enabled_options);
+
+    let mut html = String::new();
+    html::push_html(&mut html, parser);
+
+    to_html(AttrValue::from(html))
 }

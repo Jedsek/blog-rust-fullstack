@@ -45,7 +45,7 @@ where
 {
     match resp {
         Ok(resp) if resp.status().is_success() => 
-            resp.json::<W>().await.map_err(|e| format!("无法解析响应: {e}")),
+            resp.json::<W>().await.map_err(|e| format!("无法将响应解析为Json格式: {e}")),
         Ok(resp) => 
             Err(format!(
                 "({}) : {}",

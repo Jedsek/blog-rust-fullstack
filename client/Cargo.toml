@@ -14,3 +14,5 @@ wasm-bindgen-futures = "0.4.36"
 yew = { version = "0.20.0", features = ["csr"] }
 yew-router = "0.17.0"
 gloo = "0.8.0"
+pulldown-cmark = "0.9.3"
+yew-hooks = "0.2.0"

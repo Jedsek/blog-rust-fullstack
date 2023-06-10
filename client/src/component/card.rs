@@ -8,16 +8,6 @@ pub struct Props {
 
 #[function_component]
 pub fn Card(props: &Props) -> Html {
-    // html! {
-    //     <article class="p-7 hover:bg-slate-200">
-    //         <header class="text-3xl font-bold">
-    //             <h3>{ &props.title }</h3>
-    //         </header>
-    //         <footer>
-    //             { for props.children.iter() }
-    //         </footer>
-    //     </article>
-    // }
     html! {
         <div class="card bg-neutral text-white w-30 h-30">
           <div class="card-body">
