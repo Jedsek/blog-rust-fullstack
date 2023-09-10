@@ -6,10 +6,11 @@ This is a personal blog project written in rust fullstack, **still in early prog
 
 I will write a blog for writing this project, including most of the details.
 
-Before you run this project, you should install `trunk`:  
+Before you run this project, you should install `trunk` && `tailwindcss`:  
 
 ```bash
 cargo install trunk
+sudo npm install -g tailwindcss
 ```
 
 - in `/client`:  
